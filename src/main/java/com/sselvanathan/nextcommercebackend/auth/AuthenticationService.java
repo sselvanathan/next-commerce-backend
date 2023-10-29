@@ -47,4 +47,16 @@ public class AuthenticationService {
 
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
+
+    public User authorize(AuthenticationRequest request) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+
+        return repository.findByEmail(request.getEmail())
+                .orElseThrow();
+    }
 }

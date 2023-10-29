@@ -1,5 +1,6 @@
 package com.sselvanathan.nextcommercebackend.config;
 
+import com.sselvanathan.nextcommercebackend.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -21,25 +22,30 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public String extractUserId(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(User userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
     public String generateToken(
             Map<String, Object> extraClaims,
-            UserDetails userDetails
+            User userDetails
     ){
         Date currentDate = new Date(System.currentTimeMillis());
-        Date expirationDate = new Date(System.currentTimeMillis() + 1000 * 60 * 24);
+        Date expirationDate = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
+        String userId = String.valueOf(userDetails.getId());
 
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(userId)
                 .setIssuedAt(currentDate)
                 .setExpiration(expirationDate)
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
@@ -47,9 +53,19 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final String userIdFromToken = extractUserId(token);
+
+        if (userIdFromToken != null && userDetails instanceof User) {
+            String userIdFromUserDetails = String.valueOf(((User) userDetails).getId());
+
+            return userIdFromToken.equals(userIdFromUserDetails) && !isTokenExpired(token); // Token is valid
+        }
+
+        return false; // Token is invalid
     }
+
+
+
 
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
