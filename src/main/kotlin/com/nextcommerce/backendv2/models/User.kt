@@ -1,5 +1,6 @@
 package com.nextcommerce.backendv2.models
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -24,7 +25,8 @@ class User {
 
     @Column
     var password = ""
-        get() = field
+        @JsonIgnore
+        get
         set(value) {
             val passwordEncoder = BCryptPasswordEncoder()
             field = passwordEncoder.encode(value)
