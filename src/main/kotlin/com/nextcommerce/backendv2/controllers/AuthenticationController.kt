@@ -50,6 +50,7 @@ class AuthenticationController(private  val userService: UserService) {
         val cookie = Cookie("jwt", jwt)
         cookie.isHttpOnly = true
         cookie.path = "/"
+        //cookie.secure = true ToDO change if prod
 
         response.addCookie(cookie)
 
