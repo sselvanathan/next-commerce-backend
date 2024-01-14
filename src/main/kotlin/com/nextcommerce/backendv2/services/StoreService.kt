@@ -20,4 +20,11 @@ class StoreService(private val storeRepository: StoreRepository) {
 
         return storeId
     }
+
+    fun getStoreNames(userId: Int): List<Any> {
+        //ToDo hash id
+        val storeNames = this.storeRepository.getStoreNames(userId)
+
+        return storeNames
+    }
 }

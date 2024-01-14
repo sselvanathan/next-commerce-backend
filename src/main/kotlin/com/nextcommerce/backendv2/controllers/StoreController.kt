@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("api/store")
 class StoreController(private  val storeService: StoreService) {
     data class StoreIdResponse(val storeId: Int?)
+    data class StoreResponse(val stores: List<Any>)
     @GetMapping("get/oldest/id")
     fun getOldestStoreId(@CookieValue("jwt") jwt: String?): ResponseEntity<Any> {
         try {
@@ -33,7 +34,29 @@ class StoreController(private  val storeService: StoreService) {
 
             return ResponseEntity.ok(StoreIdResponse(oldestStoreId))
         } catch (e: Exception) {
-            return ResponseEntity.status(401).body(Message("error"))
+            return ResponseEntity.status(401).body(Message("expired"))
+        }
+    }
+
+    @GetMapping("get/names")
+    fun getStoreNames(@CookieValue("jwt") jwt: String?): ResponseEntity<Any> {
+        try {
+            if (jwt == null){
+                return ResponseEntity.status(401).body(Message("unauthenticated"))
+            }
+
+            val body = Jwts
+                .parser()
+                .setSigningKey("secret") // ToDo env
+                .parseClaimsJws(jwt)
+                .body
+
+            val userId = body.issuer.toInt()
+            val stores = this.storeService.getStoreNames(userId)
+
+            return ResponseEntity.ok(StoreResponse(stores))
+        } catch (e: Exception) {
+            return ResponseEntity.status(401).body(Message("expired"))
         }
     }
 
@@ -59,7 +82,7 @@ class StoreController(private  val storeService: StoreService) {
         }
     }
 
-    @GetMapping("/debug/cookies")
+    @GetMapping("debug/cookies")
     fun debugCookies(request: HttpServletRequest): ResponseEntity<String> {
         // Retrieve and log the raw Cookie header
         val cookieHeader = request.getHeader("Cookie") ?: "No Cookie header found"
