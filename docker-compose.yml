@@ -29,6 +29,33 @@ services:
       - postgres
     restart: unless-stopped
 
+  backend:
+    container_name: backend
+    build: /var/www/nextcommerce-backend
+    ports:
+      - "8080:3000"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+  admin:
+    container_name: admin
+    build: /var/www/nextcommerce-admin
+    environment:
+      - NEXT_PUBLIC_API_URL=http://37.120.176.218:3000
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+    #frontend2:
+    #  container_name: nextjs-frontend2
+    #  build: /var/www/nextcommerce-frontend
+    #   environment:
+    #   - NEXT_PUBLIC_API_URL=http://api:3000
+    #ports:
+    #   - "3002:3000"
+    # restart: unless-stopped
+
 networks:
   postgres:
     driver: bridge
