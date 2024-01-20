@@ -4,18 +4,24 @@ import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "stores")
-open class Store {
+@Table(name = "billboards")
+open class Billboard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Int = 0
 
+    @Column(name = "store_id")
+    var storeId: Int = 0
+
     @Column(name = "user_id")
     var userId: Int = 0
 
-    @Column
-    var name: String = ""
+    @Column(name = "label")
+    var label: String = ""
+
+    @Column(name = "isFeatured")
+    var isFeatured: Boolean = false
 
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null

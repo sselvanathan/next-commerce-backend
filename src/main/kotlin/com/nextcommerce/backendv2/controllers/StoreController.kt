@@ -74,7 +74,7 @@ class StoreController(private  val storeService: StoreService) {
                 .body
 
             val userId = body.issuer.toInt()
-            val user = this.storeService.createStore("Test", userId)
+            val user = this.storeService.createStore(userId, "Test") //ToDo
 
             return ResponseEntity.ok(user)
         } catch (e: Exception) {

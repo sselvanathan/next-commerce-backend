@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service
 @Service
 class StoreService(private val storeRepository: StoreRepository) {
 
-    fun createStore(name: String, userId: Int): Store {
+    fun createStore(userId: Int, name: String): Store {
         val newStore = Store()
         newStore.name = name
         newStore.userId = userId

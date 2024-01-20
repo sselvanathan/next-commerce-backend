@@ -11,7 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 @Entity
 @Table(name = "_user")
-class User {
+open class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
