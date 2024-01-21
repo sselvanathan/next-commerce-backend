@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot") version "3.2.1"
     id("io.spring.dependency-management") version "1.1.4"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.9.22"
     kotlin("jvm") version "1.9.21"
     kotlin("plugin.spring") version "1.9.21"
     kotlin("plugin.jpa") version "1.9.21"
@@ -48,4 +49,9 @@ tasks.withType<Test> {
 application {
     mainClass.set("com.nextcommerce.backendv2.NextCommerceBackendV2ApplicationKt")
 
+}
+
+allOpen {
+    annotation("jakarta.persistence.Entity")
+    annotation("org.springframework.stereotype.Service")
 }
