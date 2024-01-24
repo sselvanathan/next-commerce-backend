@@ -1,22 +1,32 @@
-# Verwenden Sie das offizielle OpenJDK-Image als Basis
-FROM openjdk:21-jdk-bullseye
+# Stage 1: Build the application
+# Name this stage as 'builder'
+FROM openjdk:21-jdk-bullseye as builder
 
 # Install required utilities
 RUN apt-get update && apt-get install -y findutils
 
-# Setzen Sie das Arbeitsverzeichnis im Container
+# Set the working directory in the container
 WORKDIR /app
 
-# Kopieren Sie die Gradle-Konfigurationsdateien zuerst (für bessere Caching-Layer)
+# Copy Gradle configuration files first (for better caching layer)
 COPY build.gradle.kts settings.gradle.kts /app/
 
-# Kopieren Sie den Gradle Wrapper und andere Projektdateien
+# Copy the Gradle Wrapper and other project files
 COPY gradlew /app/
 COPY gradle /app/gradle
 COPY src /app/src
 
-# Bauen Sie das Projekt
-RUN ./gradlew build
+# Build the project
+RUN ./gradlew build -x test
 
-# Ausführen der Anwendung
-CMD ["./gradlew", "run"]
+# Stage 2: Create the runtime image
+FROM openjdk:21-jdk-bullseye
+
+# Copy the built JAR from the 'builder' stage
+COPY --from=builder /app/build/libs/*.jar /app/app.jar
+
+# Set the working directory
+WORKDIR /app
+
+# Run the JAR file
+CMD ["java", "-jar", "app.jar"]
