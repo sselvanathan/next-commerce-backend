@@ -23,10 +23,10 @@ RUN ./gradlew build -x test
 FROM openjdk:21-jdk-bullseye
 
 # Copy the built JAR from the 'builder' stage
-COPY --from=builder /app/build/libs/*.jar /app/app.jar
+COPY --from=builder /app/build/libs/*.jar /app/
 
 # Set the working directory
 WORKDIR /app
 
-# Run the JAR file
+# Run the JAR file (specify the exact name if there are multiple JAR files)
 CMD ["java", "-jar", "app.jar"]
