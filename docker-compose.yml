@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: password
       PGDATA: /data/postgres
     volumes:
-      - ./.docker//init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - ./docker//init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
       - postgres:/data/postgres
     ports:
       - "5432:5432"
@@ -34,18 +34,21 @@ services:
     container_name: backend
     build:
       context: .
-      dockerfile: .docker/Dockerfile
+      dockerfile: docker/Dockerfile
     depends_on:
       - postgres
     ports:
       - "8080:8080"
     networks:
       - postgres
+      - admin_network
     restart: unless-stopped
 
 networks:
   postgres:
     driver: bridge
+  admin_network:
+    external: true
 
 volumes:
   postgres:

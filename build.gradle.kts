@@ -27,6 +27,14 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+
+    // JAXB API
+    implementation("javax.xml.bind:jaxb-api:2.3.1")
+
+    // JAXB Runtime
+    implementation("org.glassfish.jaxb:jaxb-runtime:2.3.1")
+
     runtimeOnly("org.postgresql:postgresql")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
