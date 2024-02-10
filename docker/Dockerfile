@@ -1,9 +1,9 @@
 # Stage 1: Build the application
 # Name this stage as 'builder'
-FROM openjdk:21-jdk-bullseye as builder
+FROM amazoncorretto:21-alpine as builder
 
 # Install required utilities
-RUN apt-get update && apt-get install -y findutils
+RUN apk update && apk add --no-cache findutils
 
 # Set the working directory in the container
 WORKDIR /app
@@ -17,10 +17,11 @@ COPY gradle /app/gradle
 COPY src /app/src
 
 # Build the project
-RUN ./gradlew build -x test
+# If you encounter any issues during the build, consider adding more specific build dependencies or troubleshooting compatibility issues.
+RUN ./gradlew build -x test --no-daemon
 
 # Stage 2: Create the runtime image
-FROM openjdk:21-jdk-bullseye
+FROM amazoncorretto:21-alpine
 
 # Copy the built JAR from the 'builder' stage
 COPY --from=builder /app/build/libs/*.jar /app/app.jar
