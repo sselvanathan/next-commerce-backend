@@ -6,13 +6,9 @@ import com.nextcommerce.backendv2.dtos.RegisterDTO
 import com.nextcommerce.backendv2.models.User
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
-import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
@@ -47,24 +43,29 @@ class AuthenticationController(private  val userService: UserService) {
             .signWith(SignatureAlgorithm.HS256, "secret") //ToDo save in env
             .compact()
 
-        val cookie = Cookie("jwt", jwt)
-        cookie.isHttpOnly = true
-        cookie.path = "/"
-        //cookie.secure = true ToDO change if prod
 
-        response.addCookie(cookie)
+            // Constructing user JSON object
+    val userJson = mapOf(
+        "id" to user.id.toString(),
+        "name" to user.name, // Assuming your user object has a name field
+        "email" to user.email,
+        "jwt" to jwt // Including JWT in the user object
+    )
 
-        return ResponseEntity.ok(Message("success"))
+        return ResponseEntity.ok(userJson)
     }
 
     @PostMapping("logout")
-    fun logout(response: HttpServletResponse): ResponseEntity<Any> {
-        val cookie = Cookie("jwt", "")
-        cookie.maxAge = 0
-        cookie.path = "/"
+    fun logout(@RequestHeader("Authorization") authHeader: String?): ResponseEntity<Any> {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body(Message("unauthenticated"))
+        }
 
-        response.addCookie(cookie)
+        // Extract the JWT from the Authorization header
+        val jwt = authHeader.substring(7) // Remove "Bearer " prefix
 
-        return ResponseEntity.ok(Message("success"))
+        //ToDo check if token is still valid and add it to a token blacklist
+
+        return ResponseEntity.ok(Message("Successfully logged out!"))
     }
 }
